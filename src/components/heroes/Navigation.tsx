@@ -1,3 +1,4 @@
+import React from 'react'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import Details from './views/Details'
 import List from './views/List'
