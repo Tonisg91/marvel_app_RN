@@ -4,7 +4,7 @@ import { useAuth } from './context'
 
 export default function Login() {
   const { login } = useAuth()
-  login({ email: 'asd', password: 'ads' })
+
   return (
     <View>
       <Text>Login</Text>
