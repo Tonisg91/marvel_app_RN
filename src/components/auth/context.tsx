@@ -4,14 +4,13 @@ import { AuthContextProps, AuthInput, User } from './type'
 import FakeUsers from '../../seeds.json'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
+const USER = 'user'
+
+// Context
 const AuthContext = createContext({} as AuthContextProps)
 
 // Hook
 export const useAuth = () => useContext(AuthContext)
-
-function storeUser(user: User) {
-  AsyncStorage.setItem('user', JSON.stringify(user))
-}
 
 // Provider
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -19,7 +18,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
 
   const loadUser = async () => {
-    const cachedUser = await AsyncStorage.getItem('user')
+    const cachedUser = await AsyncStorage.getItem(USER)
 
     if (!cachedUser) {
       setLoading(false)
@@ -31,20 +30,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const login = async ({ email, password }: AuthInput) => {
-    FakeUsers.find(user => {
-      if (user.email === email && user.password === password) {
-        const { password, ...userData } = user
-        setUser(userData)
-        storeUser(userData)
-      }
-    })
+    const foundUser = FakeUsers.find(user => user.email === email)
+
+    if (!foundUser) {
+      console.warn('User not found.')
+      return
+    }
+
+    if (foundUser.password !== password) {
+      console.warn('Password does not match.')
+      return
+    }
+
+    const userData = { email: foundUser.email, name: foundUser.name }
+
+    await AsyncStorage.setItem(USER, JSON.stringify(userData))
+    setUser(userData)
   }
 
-  const logout = () => setUser(null)
+  const logout = () => {
+    AsyncStorage.removeItem(USER)
+      .then(() => setUser(null))
+      .catch(err => console.error(err))
+  }
 
   useEffect(() => {
     loadUser()
-  }, [loadUser])
+  }, [])
 
   return (
     <AuthContext.Provider value={{ user, loading, login, logout }}>
