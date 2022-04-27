@@ -1,215 +1,242 @@
-import {ApisauceInstance, create} from 'apisauce';
-import * as React from 'react';
+import { ApisauceInstance, create } from 'apisauce'
+import * as React from 'react'
 import {
   createContext,
   useCallback,
   useContext,
   useEffect,
-  useState,
-} from 'react';
-import {FlatList, Text, View} from 'react-native';
+  useState
+} from 'react'
+import { FlatList, Text, View } from 'react-native'
 
 type MarvelHeroesListResponse = {
+  offset: number
+  limit: number
+  total: number
+  count: number
+  results: []
+  // "results": [{array of objects}}]
   //TODO: tipar las respuestas de API para listado de héroes
-};
+}
 
 type MarvelHeroComicsListResponse = {
   //TODO: tipar las respuestas de API para listado de cómics de un héroe
-};
+}
 
-type MarvelResponse = MarvelHeroesListResponse | MarvelHeroComicsListResponse;
+type MarvelResponse = MarvelHeroesListResponse | MarvelHeroComicsListResponse
 
-type MarvelHeroData = Array<{}>; //TODO tipar los datos de héroes
-type MarvelComicData = Array<{}>; //TODO: tipar los datos de cómics
-type MarvelData = MarvelHeroData | MarvelComicData;
+interface Character {
+  id: number
+  name: string
+  description: string
+  modified: Date
+  resourceURI: string
+  urls: string[]
+  thumbnail: string
+  comics: string[]
+  stories: string[]
+  events: string[]
+  series: string[]
+}
+
+type MarvelHeroData = Array<Character> //TODO tipar los datos de héroes
+type MarvelComicData = Array<{}> //TODO: tipar los datos de cómics
+type MarvelData = MarvelHeroData | MarvelComicData
 
 type ContextStateUninitialized = {
-  url?: undefined;
-  isFetching: false;
-  data?: undefined;
-};
+  url?: undefined
+  isFetching: false
+  data?: undefined
+}
 
 type ContextStateInitialized = {
-  url: string;
-  isFetching: false;
-  data?: undefined;
-};
+  url: string
+  isFetching: false
+  data?: undefined
+}
 
 type ContextStateFetching<T> = {
-  url: string;
-  isFetching: true;
-  data?: T;
-};
+  url: string
+  isFetching: true
+  data?: T
+}
 
 type ContextStateFetched<T> = {
-  url: string;
-  isFetching: false;
-  data: T;
-  apisauceInstance: ApisauceInstance;
-};
+  url: string
+  isFetching: false
+  data: T
+  apisauceInstance: ApisauceInstance
+}
 
 type ApiRequestContextState<T> =
   | ContextStateUninitialized
   | ContextStateInitialized
   | ContextStateFetching<T>
-  | ContextStateFetched<T>;
+  | ContextStateFetched<T>
 
 interface IActions {
-  paginate(): void;
+  paginate(): void
 }
 
 const initialState = {
-  isFetching: false,
-};
+  isFetching: false
+}
 
 type Props = {
-  url: string;
-  maxResultsPerPage: number;
-  children: JSX.Element;
-};
+  url: string
+  maxResultsPerPage: number
+  children: JSX.Element
+}
 
 type ProxyHandler<T, P extends string> = {
-  get?(target: T, p: P, receiver: any): any;
+  get?(target: T, p: P, receiver: any): any
   set?(
-    target: {results: {[key in P]?: T}},
+    target: { results: { [key in P]?: T } },
     p: P,
     value: any,
-    receiver: any,
-  ): boolean;
-};
+    receiver: any
+  ): boolean
+}
 
 declare const Proxy: {
   new <T extends object>(
-    target: {results: {[key in string]?: T}; apiInstance: ApisauceInstance},
-    handler: ProxyHandler<T, string>,
-  ): {[key: string]: Promise<T>};
-};
+    target: { results: { [key in string]?: T }; apiInstance: ApisauceInstance },
+    handler: ProxyHandler<T, string>
+  ): { [key: string]: Promise<T> }
+}
 
 const marvelProxy = new Proxy<MarvelResponse>(
-  {apiInstance: create({baseURL: 'https://developer.marvel.com'}), results: {}},
+  {
+    apiInstance: create({ baseURL: 'https://developer.marvel.com' }),
+    results: {}
+  },
   {
     get: function <T extends MarvelResponse>(
       target: {
         results: {
-          [key in string]?: T;
-        };
+          [key in string]?: T
+        }
       },
-      url: string,
+      url: string
     ) {
-      const values = target;
+      const values = target
 
       return new Promise<T>(async (resolve, reject) => {
         if (values.results.hasOwnProperty(url)) {
-          resolve(values.results[url] as T);
-          return;
+          resolve(values.results[url] as T)
+          return
         }
 
         try {
-          const response = await (target as {
-            results: {
-              [key in string]?: T;
-            };
-            apiInstance: ApisauceInstance;
-          }).apiInstance.get<T>(url);
-          const {data} = response;
+          const response = await (
+            target as {
+              results: {
+                [key in string]?: T
+              }
+              apiInstance: ApisauceInstance
+            }
+          ).apiInstance.get<T>(url)
+          const { data } = response
           if (response.originalError?.response?.status !== 200 || !data) {
-            throw new Error('Error fetching data');
+            throw new Error('Error fetching data')
           }
 
-          (target as {
-            results: {
-              [key in string]?: T;
-            };
-          }).results[url] = data;
+          ;(
+            target as {
+              results: {
+                [key in string]?: T
+              }
+            }
+          ).results[url] = data
 
-          return data;
+          return data
         } catch (e) {
-          reject(e);
+          reject(e)
         }
-      });
+      })
     },
     set: (target, url: string, value) => {
-      target.results[url] = value;
-      return true;
-    },
-  },
-);
+      target.results[url] = value
+      return true
+    }
+  }
+)
 
 const ApiRequestContext = createContext<
   [ApiRequestContextState<MarvelData>, IActions]
->([initialState as ContextStateUninitialized, {paginate: () => undefined}]);
+>([initialState as ContextStateUninitialized, { paginate: () => undefined }])
 
 function getAuthQueryStringParams(): {
-  apikey: string;
-  ts: string;
-  hash: string;
+  apikey: string
+  ts: string
+  hash: string
 } {
-  throw new Error('TODO: devolver los parametros de autenticación');
+  throw new Error('TODO: devolver los parametros de autenticación')
 }
 
 function getPaginationQueryStringParams(
   maxResults: number,
-  page: number,
+  page: number
 ): {
-  limit: string;
-  offset: string;
+  limit: string
+  offset: string
 } {
   throw new Error(
-    `TODO: devolver los parametros de paginación para el listado de héroes con ${maxResults} resultados por página y página ${page}`,
-  );
+    `TODO: devolver los parametros de paginación para el listado de héroes con ${maxResults} resultados por página y página ${page}`
+  )
 }
 
 export function CachedRequestsProvider({
   children,
   url,
-  maxResultsPerPage,
+  maxResultsPerPage
 }: Props) {
   const [state, setState] = useState<ApiRequestContextState<MarvelData>>({
     isFetching: false,
-    url,
-  } as ContextStateInitialized);
+    url
+  } as ContextStateInitialized)
 
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(0)
 
   const getNavigatableUrl = useCallback((): string => {
-    const newUrl = new URL(url);
+    const newUrl = new URL(url)
     Object.entries({
       ...getAuthQueryStringParams(),
-      ...getPaginationQueryStringParams(maxResultsPerPage, page),
-    }).forEach((param) => {
-      newUrl.searchParams.append(param[0], param[1]);
-    });
-    return newUrl.toString();
-  }, [page, state]);
+      ...getPaginationQueryStringParams(maxResultsPerPage, page)
+    }).forEach(param => {
+      newUrl.searchParams.append(param[0], param[1])
+    })
+    return newUrl.toString()
+  }, [page, state])
 
   useEffect(() => {
     if (state.isFetching || !state.url) {
-      return;
+      return
     }
 
     setState(
       state.url !== url
         ? {
             isFetching: true,
-            url,
+            url
           }
         : {
             ...state,
-            isFetching: true,
-          },
-    );
+            isFetching: true
+          }
+    )
 
-    marvelProxy[getNavigatableUrl()].then((value) => {
+    marvelProxy[getNavigatableUrl()].then(value => {
       setState({
         ...state,
         isFetching: false,
         data: {
           ...(state.data ?? {}),
-          [url]: value,
-        },
-      } as ContextStateFetched<MarvelData>);
-    });
-  }, [page, url]);
+          [url]: value
+        }
+      } as ContextStateFetched<MarvelData>)
+    })
+  }, [page, url])
 
   return (
     <ApiRequestContext.Provider
@@ -217,22 +244,22 @@ export function CachedRequestsProvider({
         state,
         {
           /* TODO implementar la acción */
-        },
+        }
       ]}>
       {children}
     </ApiRequestContext.Provider>
-  );
+  )
 }
 
 export const useCachedRequests = (): [
   ApiRequestContextState<MarvelData>,
-  IActions,
+  IActions
 ] => {
-  return useContext(ApiRequestContext);
-};
+  return useContext(ApiRequestContext)
+}
 
 function HeroesList() {
-  const [state, actions] = useCachedRequests();
+  const [state, actions] = useCachedRequests()
   return (
     <View>
       <FlatList
@@ -241,13 +268,13 @@ function HeroesList() {
         onEndReached={actions.paginate}
       />
     </View>
-  );
+  )
 }
 
-export function ExampleProvidedComponent({url}: {url: string}) {
+export function ExampleProvidedComponent({ url }: { url: string }) {
   return (
     <CachedRequestsProvider maxResultsPerPage={10} url={url}>
       <HeroesList />
     </CachedRequestsProvider>
-  );
+  )
 }
