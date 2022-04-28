@@ -9,40 +9,6 @@ import {
 } from 'react'
 import { FlatList, Text, View } from 'react-native'
 
-type MarvelHeroesListResponse = {
-  offset: number
-  limit: number
-  total: number
-  count: number
-  results: []
-  // "results": [{array of objects}}]
-  //TODO: tipar las respuestas de API para listado de héroes
-}
-
-type MarvelHeroComicsListResponse = {
-  //TODO: tipar las respuestas de API para listado de cómics de un héroe
-}
-
-type MarvelResponse = MarvelHeroesListResponse | MarvelHeroComicsListResponse
-
-interface Character {
-  id: number
-  name: string
-  description: string
-  modified: Date
-  resourceURI: string
-  urls: string[]
-  thumbnail: string
-  comics: string[]
-  stories: string[]
-  events: string[]
-  series: string[]
-}
-
-type MarvelHeroData = Array<Character> //TODO tipar los datos de héroes
-type MarvelComicData = Array<{}> //TODO: tipar los datos de cómics
-type MarvelData = MarvelHeroData | MarvelComicData
-
 type ContextStateUninitialized = {
   url?: undefined
   isFetching: false

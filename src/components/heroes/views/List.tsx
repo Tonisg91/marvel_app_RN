@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 
-import { create } from 'apisauce'
+import { create, ApiResponse, ApiErrorResponse, ApiOkResponse } from 'apisauce'
+import {
+  MarvelApiResponse,
+  MarvelHeroData,
+  MarvelHeroesListResponse
+} from '../type'
 
 const api = create({
   baseURL: 'https://gateway.marvel.com/'
@@ -14,11 +19,14 @@ const apiAuth = {
 }
 
 export default function List() {
-  const [heroes, setHeroes] = useState([])
+  const [heroes, setHeroes] = useState<MarvelHeroData>([])
 
   useEffect(() => {
     api.get('/v1/public/characters', apiAuth).then(res => {
-      console.log(Object.keys(res.data.data))
+      const apiResponse =
+        res.data as MarvelApiResponse<MarvelHeroesListResponse>
+
+      setHeroes(apiResponse.data.results)
     })
   }, [])
 
