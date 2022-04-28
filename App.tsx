@@ -5,9 +5,14 @@ import { NavigationContainer } from '@react-navigation/native'
 import HeroNavigation from './src/components/heroes/Navigation'
 import { AuthProvider, useAuth } from './src/components/auth/context'
 import Login from './src/components/auth/Login'
+import { DataProvider } from './src/components/heroes/context'
 
 function AppState({ children }: { children: React.ReactNode }) {
-  return <AuthProvider>{children}</AuthProvider>
+  return (
+    <AuthProvider>
+      <DataProvider>{children}</DataProvider>
+    </AuthProvider>
+  )
 }
 
 function Navigation() {

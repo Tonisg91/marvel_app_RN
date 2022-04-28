@@ -7,32 +7,22 @@ import {
   MarvelHeroData,
   MarvelHeroesListResponse
 } from '../type'
+import { getAuthQueryStringParams } from '../utils'
+import { useData } from '../context'
 
 const api = create({
-  baseURL: 'https://gateway.marvel.com/'
+  baseURL: 'https://gateway.marvel.com/',
+  params: getAuthQueryStringParams()
 })
 
-const apiAuth = {
-  ts: 'redarborTechnicalInterview',
-  apikey: '524febf52b043e8ddd735c5bbee162dd',
-  hash: '63383cc4deb85692185eb6670bf4d20a'
-}
-
 export default function List() {
-  const [heroes, setHeroes] = useState<MarvelHeroData>([])
-
-  useEffect(() => {
-    api.get('/v1/public/characters', apiAuth).then(res => {
-      const apiResponse =
-        res.data as MarvelApiResponse<MarvelHeroesListResponse>
-
-      setHeroes(apiResponse.data.results)
-    })
-  }, [])
+  const { data } = useData()
 
   return (
     <View>
-      <Text>{JSON.stringify(heroes)}</Text>
+      {data.map(hero => (
+        <Text key={hero.name}>{hero.name}</Text>
+      ))}
     </View>
   )
 }

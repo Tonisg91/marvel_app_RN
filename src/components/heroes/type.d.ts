@@ -28,6 +28,11 @@ export type MarvelHeroData = Array<Character>
 export type MarvelComicData = Array<Comic>
 export type MarvelData = MarvelHeroData | MarvelComicData
 
+export interface AuthParams {
+  apikey: string
+  ts: string
+  hash: string
+}
 export interface TextObject {
   type: string
   language: string
