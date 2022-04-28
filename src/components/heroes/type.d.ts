@@ -63,10 +63,10 @@ export interface Character {
   resourceURI: string
   urls: URL[]
   thumbnail: Image
-  comics: Resource[]
-  stories: Resource[]
-  events: Resource[]
-  series: Resource[]
+  comics: Resource
+  stories: Resource
+  events: Resource
+  series: Resource
 }
 
 export interface Comic {
