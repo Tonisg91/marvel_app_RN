@@ -11,7 +11,8 @@ module.exports = {
         'no-shadow': 'off',
         'no-undef': 'off',
         semi: 'never',
-        'comma-dangle': 'never'
+        'comma-dangle': 'never',
+        'no-unused-vars': 'warn'
       }
     }
   ]

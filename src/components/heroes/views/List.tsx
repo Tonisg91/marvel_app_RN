@@ -2,12 +2,8 @@ import React from 'react'
 import {
   ActivityIndicator,
   ImageBackground,
-  Image,
   StyleSheet,
-  Text,
-  View,
-  FlatList,
-  ScrollView
+  FlatList
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import ListSeparator from '../../common/ListSeparator'
@@ -18,7 +14,7 @@ export default function List() {
   const { data } = useData()
 
   if (!data.length) return <ActivityIndicator />
-  const hero = data[0]
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <ImageBackground
