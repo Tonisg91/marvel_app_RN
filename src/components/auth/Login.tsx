@@ -1,14 +1,5 @@
 import React, { useState } from 'react'
-import {
-  Button,
-  ImageBackground,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  TouchableOpacityBase,
-  View
-} from 'react-native'
+import { ImageBackground, StyleSheet, TextInput, View } from 'react-native'
 import CustomButton from '../common/CustomButton'
 import { useAuth } from './context'
 import { AuthInput } from './type'

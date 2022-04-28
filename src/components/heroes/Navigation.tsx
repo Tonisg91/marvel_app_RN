@@ -7,7 +7,10 @@ const Stack = createNativeStackNavigator()
 
 export default function HeroNavigation() {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false
+      }}>
       <Stack.Screen name="Home" component={List} />
       <Stack.Screen name="Hero Details" component={Details} />
     </Stack.Navigator>

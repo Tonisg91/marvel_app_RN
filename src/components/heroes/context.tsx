@@ -29,7 +29,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   const [data, setData] = useState<MarvelHeroData>([])
 
   useEffect(() => {
-    api.get('/v1/public/characters').then(res => {
+    api.get('/v1/public/characters', { limit: 50 }).then(res => {
       const apiResponse =
         res.data as MarvelApiResponse<MarvelHeroesListResponse>
 

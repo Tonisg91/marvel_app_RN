@@ -62,7 +62,7 @@ export interface Character {
   modified: Date
   resourceURI: string
   urls: URL[]
-  thumbnail: string
+  thumbnail: Image
   comics: Resource[]
   stories: Resource[]
   events: Resource[]
