@@ -12,7 +12,8 @@ module.exports = {
         'no-undef': 'off',
         semi: 'never',
         'comma-dangle': 'never',
-        'no-unused-vars': 'warn'
+        'no-unused-vars': 'warn',
+        'unused-imports/no-unused-imports': 'warn'
       }
     }
   ]

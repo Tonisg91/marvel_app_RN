@@ -5,14 +5,12 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import Icon from 'react-native-vector-icons/Ionicons'
 
 import { Character } from './type'
+import { RootStackParams } from './Navigation'
 
 export default function HeroCard({ hero }: { hero: Character }) {
-  const navigation = useNavigation<NativeStackNavigationProp<any>>()
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParams>>()
 
-  const goDetails = () =>
-    navigation.navigate('Hero Details', {
-      hero
-    })
+  const goDetails = () => navigation.navigate('Hero Details', hero)
 
   return (
     <TouchableOpacity style={styles.container} onPress={goDetails}>
