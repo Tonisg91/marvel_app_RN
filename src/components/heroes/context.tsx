@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
-import { create } from 'apisauce'
+import { ApisauceInstance, create } from 'apisauce'
 import { getAuthQueryStringParams } from './utils'
 import {
   MarvelApiResponse,
@@ -10,6 +10,7 @@ import {
 type DataContextProps = {
   loading: boolean
   data: MarvelHeroData
+  api: ApisauceInstance
 }
 
 const api = create({
@@ -38,7 +39,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   return (
-    <DataContext.Provider value={{ data, loading }}>
+    <DataContext.Provider value={{ data, loading, api }}>
       {children}
     </DataContext.Provider>
   )

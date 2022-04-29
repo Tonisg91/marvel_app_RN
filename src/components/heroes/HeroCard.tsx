@@ -17,6 +17,7 @@ export default function HeroCard({ hero }: { hero: Character }) {
       <Image
         source={{ uri: `${hero.thumbnail.path}.${hero.thumbnail.extension}` }}
         style={styles.heroImage}
+        resizeMode="stretch"
       />
       <View style={styles.heroNameContainer}>
         <Text
@@ -51,8 +52,7 @@ const styles = StyleSheet.create({
   },
   heroImage: {
     width: 150,
-    height: 120,
-    resizeMode: 'stretch'
+    height: 120
   },
   heroNameContainer: {
     alignItems: 'center',
