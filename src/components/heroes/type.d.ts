@@ -2,6 +2,7 @@ export type DataContextProps = {
   data: InitStateContext
   loadMoreHeroes: () => void
   loadComics: (characterId: string) => void
+  loadMoreComics: (characterId: string) => void
 }
 
 interface MarvelDataContext<T> {

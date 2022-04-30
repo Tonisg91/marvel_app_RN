@@ -15,16 +15,15 @@ import ListSeparator from '../../common/ListSeparator'
 import { useData } from '../context'
 import ComicCard from '../ComicCard'
 import DescriptionHeader from '../DescriptionHeader'
+import { Comic } from '../type'
 
 interface Props
   extends NativeStackScreenProps<RootStackParams, 'Hero Details'> {}
 
 export default function Details({ route }: Props) {
-  const { data, loadComics } = useData()
+  const { data, loadComics, loadMoreComics } = useData()
   const { ...hero } = route.params
   const imageUrl = `${hero.thumbnail.path}.${hero.thumbnail.extension}`
-
-  console.log(hero)
 
   useEffect(() => {
     loadComics(hero.id.toString())
@@ -50,11 +49,13 @@ export default function Details({ route }: Props) {
         contentContainerStyle={styles.listContent}
         renderItem={({ item }) => <ComicCard comic={item} />}
         numColumns={2}
-        keyExtractor={item => item.id}
+        keyExtractor={(item: Comic) => item.id.toString(36)}
         ItemSeparatorComponent={ListSeparator}
         ListHeaderComponent={() => (
           <DescriptionHeader description={hero.description} />
         )}
+        onEndReached={() => loadMoreComics(hero.id.toString())}
+        onEndReachedThreshold={0.4}
       />
     </ImageBackground>
   )

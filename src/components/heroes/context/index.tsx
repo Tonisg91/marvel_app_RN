@@ -59,12 +59,26 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       })
   }
 
+  const loadMoreComics = (characterId: string) => {
+    api
+      .get(`/v1/public/characters/${characterId}/comics`, {
+        offset: state.comics.offset + 30,
+        limit: state.comics.limit
+      })
+      .then(res => {
+        const apiResponse = res.data as MarvelApiResponse<Comic>
+
+        dispatch({ type: LOAD_COMICS, payload: apiResponse.data.results })
+      })
+  }
+
   useEffect(() => {
     initialLoad()
   }, [])
 
   return (
-    <DataContext.Provider value={{ data: state, loadMoreHeroes, loadComics }}>
+    <DataContext.Provider
+      value={{ data: state, loadMoreHeroes, loadComics, loadMoreComics }}>
       {children}
     </DataContext.Provider>
   )
