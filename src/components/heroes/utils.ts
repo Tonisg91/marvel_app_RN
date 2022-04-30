@@ -8,3 +8,16 @@ export function getAuthQueryStringParams(): AuthParams {
     apikey: APIKEY
   }
 }
+
+function getPaginationQueryStringParams(
+  maxResults: number,
+  page: number
+): {
+  limit: string
+  offset: string
+} {
+  return {
+    limit: `${maxResults}`,
+    offset: `${maxResults * page}`
+  }
+}

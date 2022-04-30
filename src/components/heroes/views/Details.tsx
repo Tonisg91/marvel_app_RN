@@ -16,18 +16,19 @@ import { useData } from '../context'
 import ComicCard from '../ComicCard'
 import DescriptionHeader from '../DescriptionHeader'
 import { Comic } from '../type'
+import ListSpinner from '../../common/ListSpinner'
+import useComics from '../hooks/useComics'
 
 interface Props
   extends NativeStackScreenProps<RootStackParams, 'Hero Details'> {}
 
 export default function Details({ route }: Props) {
-  const { data, loadComics, loadMoreComics } = useData()
   const { ...hero } = route.params
+  const { loading, comics, loadMore } = useComics(hero.id)
+
   const imageUrl = `${hero.thumbnail.path}.${hero.thumbnail.extension}`
 
-  useEffect(() => {
-    loadComics(hero.id.toString())
-  }, [])
+  if (loading) return <ListSpinner />
 
   return (
     <ImageBackground
@@ -44,7 +45,7 @@ export default function Details({ route }: Props) {
         </View>
       </View>
       <FlatList
-        data={data.comics.data}
+        data={comics}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.listContent}
         renderItem={({ item }) => <ComicCard comic={item} />}
@@ -54,7 +55,7 @@ export default function Details({ route }: Props) {
         ListHeaderComponent={() => (
           <DescriptionHeader description={hero.description} />
         )}
-        onEndReached={() => loadMoreComics(hero.id.toString())}
+        onEndReached={loadMore}
         onEndReachedThreshold={0.4}
       />
     </ImageBackground>

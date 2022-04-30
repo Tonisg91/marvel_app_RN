@@ -14,7 +14,7 @@ import HeroCard from '../HeroCard'
 
 export default function List() {
   const { data, loadMoreHeroes } = useData()
-  const { fetching, heroes } = data
+  const { loading, heroes } = data
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -22,11 +22,11 @@ export default function List() {
         style={styles.container}
         source={require('../../../../assets/images/list-bg.jpg')}
         resizeMode="stretch">
-        {fetching ? (
+        {loading ? (
           <ListSpinner />
         ) : (
           <FlatList
-            data={heroes.data}
+            data={heroes.results}
             renderItem={({ item }) => <HeroCard hero={item} />}
             numColumns={2}
             keyExtractor={item => item.id.toString(36)}

@@ -1,17 +1,22 @@
-import { InitStateContext } from '../type'
+import {
+  Character,
+  InitStateContext,
+  MarvelHeroData,
+  MarvelResponseData
+} from '../type'
+
+const marvelResponse = {
+  offset: 0,
+  limit: 20,
+  total: 0,
+  count: 0,
+  results: []
+}
 
 export const initialState: InitStateContext = {
-  heroes: {
-    offset: 0,
-    limit: 30,
-    data: []
-  },
-  comics: {
-    offset: 0,
-    limit: 30,
-    data: []
-  },
-  fetching: true
+  heroes: marvelResponse,
+  comics: [],
+  loading: true
 }
 
 export const FETCH_MORE = 'FETCH_MORE'
@@ -28,45 +33,47 @@ export function reducer(
 ): InitStateContext {
   switch (action.type) {
     case FETCH_MORE:
-      return { ...state, fetching: true }
+      return { ...state, loading: true }
     case INITIAL_LOAD:
       return {
         ...state,
-        fetching: false,
-        heroes: {
-          ...state.heroes,
-          data: action.payload
-        }
+        loading: false,
+        heroes: action.payload
       }
     case LOAD_MORE_HEROES:
       return {
         ...state,
-        fetching: false,
+        loading: false,
         heroes: {
           ...state.heroes,
           offset: state.heroes.offset + 30,
-          data: [...state.heroes.data, ...action.payload]
+          results: [...state.heroes.results, ...action.payload]
         }
       }
     case LOAD_COMICS:
       return {
         ...state,
-        fetching: false,
-        comics: {
-          ...state.comics,
-          data: [...state.comics.data, ...action.payload]
-        }
+        loading: false,
+        comics: [{ id: action.payload.id, data: action.payload.data }]
       }
-    case LOAD_MORE_COMICS:
+    case LOAD_MORE_COMICS: {
       return {
         ...state,
-        fetching: false,
-        comics: {
-          ...state.comics,
-          offset: state.comics.offset + 30,
-          data: [...state.comics.data, ...action.payload]
-        }
+        comics: state.comics.map(elem => {
+          if (elem.id === action.payload.id) {
+            return {
+              ...elem,
+              data: {
+                ...elem.data,
+                offset: elem.data.offset + elem.data.results.length,
+                results: [...elem.data.results, ...action.payload.data.results]
+              }
+            }
+          }
+          return elem
+        })
       }
+    }
     default:
       return state
   }

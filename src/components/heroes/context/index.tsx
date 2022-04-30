@@ -1,13 +1,22 @@
 import React, { createContext, useContext, useEffect, useReducer } from 'react'
 import { create } from 'apisauce'
 import { getAuthQueryStringParams } from '../utils'
-import { Character, Comic, DataContextProps, MarvelApiResponse } from '../type'
+import {
+  Character,
+  DataContextProps,
+  MarvelApiResponse,
+  MarvelComic,
+  MarvelComicData,
+  MarvelHeroData
+} from '../type'
 import {
   reducer,
   initialState,
   INITIAL_LOAD,
   LOAD_MORE_HEROES,
-  LOAD_COMICS
+  LOAD_COMICS,
+  FETCH_MORE,
+  LOAD_MORE_COMICS
 } from './reducer'
 
 const api = create({
@@ -21,8 +30,13 @@ const DataContext = createContext({} as DataContextProps)
 // Hook
 export const useData = () => useContext(DataContext)
 
+interface Props {
+  children: React.ReactNode
+  maxItemsPerPage: number
+}
+
 // Provider
-export function DataProvider({ children }: { children: React.ReactNode }) {
+export function DataProvider({ children, maxItemsPerPage = 20 }: Props) {
   const [state, dispatch] = useReducer(reducer, initialState)
 
   const initialLoad = () => {
@@ -31,7 +45,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       .then(res => {
         const apiResponse = res.data as MarvelApiResponse<Character>
 
-        dispatch({ type: INITIAL_LOAD, payload: apiResponse.data.results })
+        dispatch({ type: INITIAL_LOAD, payload: apiResponse.data })
       })
   }
 
@@ -41,34 +55,44 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
         offset: state.heroes.offset + 30
       })
       .then(res => {
-        const apiResponse = res.data as MarvelApiResponse<Character>
+        const apiResponse = res.data as MarvelApiResponse<MarvelHeroData>
 
         dispatch({ type: LOAD_MORE_HEROES, payload: apiResponse.data.results })
       })
+      .catch(console.error)
   }
 
-  const loadComics = (characterId: string) => {
+  const loadComics = (characterId: number) => {
     api
       .get(`/v1/public/characters/${characterId}/comics`, {
-        limit: state.comics.limit
+        limit: 20
       })
       .then(res => {
-        const apiResponse = res.data as MarvelApiResponse<Comic>
+        const apiResponse = res.data as MarvelApiResponse<MarvelComicData>
 
-        dispatch({ type: LOAD_COMICS, payload: apiResponse.data.results })
+        const payload: MarvelComic = {
+          id: characterId,
+          data: apiResponse.data
+        }
+
+        dispatch({ type: LOAD_COMICS, payload })
       })
+      .catch(console.error)
   }
 
-  const loadMoreComics = (characterId: string) => {
+  const loadMoreComics = (characterId: number, offset: number) => {
+    console.log('LOAD MORE COMICS')
     api
-      .get(`/v1/public/characters/${characterId}/comics`, {
-        offset: state.comics.offset + 30,
-        limit: state.comics.limit
-      })
+      .get(`/v1/public/characters/${characterId}/comics`, { offset })
       .then(res => {
-        const apiResponse = res.data as MarvelApiResponse<Comic>
+        const apiResponse = res.data as MarvelApiResponse<MarvelComicData>
 
-        dispatch({ type: LOAD_COMICS, payload: apiResponse.data.results })
+        const payload: MarvelComic = {
+          id: characterId,
+          data: apiResponse.data
+        }
+
+        dispatch({ type: LOAD_MORE_COMICS, payload })
       })
   }
 
@@ -78,7 +102,12 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <DataContext.Provider
-      value={{ data: state, loadMoreHeroes, loadComics, loadMoreComics }}>
+      value={{
+        data: state,
+        loadMoreHeroes,
+        loadComics,
+        loadMoreComics
+      }}>
       {children}
     </DataContext.Provider>
   )
