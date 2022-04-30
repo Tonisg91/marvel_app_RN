@@ -1,12 +1,10 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import {
   FlatList,
   Image,
   StyleSheet,
   Text,
   View,
-  SafeAreaView,
-  AppRegistry,
   ImageBackground
 } from 'react-native'
 
@@ -22,22 +20,14 @@ interface Props
   extends NativeStackScreenProps<RootStackParams, 'Hero Details'> {}
 
 export default function Details({ route }: Props) {
-  const [state, setState] = useState([])
-  const data = useData()
+  const { data, loadComics } = useData()
   const { ...hero } = route.params
   const imageUrl = `${hero.thumbnail.path}.${hero.thumbnail.extension}`
 
-  const { comics } = hero
+  console.log(hero)
 
   useEffect(() => {
-    const endpoint = comics.collectionURI.slice(
-      comics.collectionURI.indexOf('.com') + 4
-    )
-
-    data.api.get(endpoint).then(res => {
-      console.log(Object.keys(res.data.data))
-      setState(res.data.data.results)
-    })
+    loadComics(hero.id.toString())
   }, [])
 
   return (
@@ -55,7 +45,7 @@ export default function Details({ route }: Props) {
         </View>
       </View>
       <FlatList
-        data={state}
+        data={data.comics.data}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.listContent}
         renderItem={({ item }) => <ComicCard comic={item} />}

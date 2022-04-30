@@ -1,28 +1,42 @@
+export type DataContextProps = {
+  data: InitStateContext
+  loadMoreHeroes: () => void
+  loadComics: (characterId: string) => void
+}
+
+interface MarvelDataContext<T> {
+  offset: number
+  limit: number
+  data: T
+}
+
+export type InitStateContext = {
+  heroes: MarvelDataContext<MarvelHeroData>
+  comics: MarvelDataContext<MarvelComicData>
+  fetching: boolean
+}
+
 export type MarvelApiResponse<T> = {
   attributionHTML: string
   attributionText: string
   code: number
   copyright: string
-  data: T
+  data: MarvelResponseData<T>
   etag: string
   status: string
 }
 
-export type MarvelHeroesListResponse = {
+export type MarvelResponseData<T> = {
   offset: number
   limit: number
   total: number
   count: number
-  results: MarvelHeroData
+  results: T
 }
 
-// export type MarvelHeroComicsListResponse = {
-//   //TODO: tipar las respuestas de API para listado de cómics de un héroe
-// }
-
 export type MarvelResponse =
-  | MarvelHeroesListResponse
-  | MarvelHeroComicsListResponse
+  | MarvelResponse<MarvelHeroData>
+  | MarvelResponse<MarvelComicData>
 
 export type MarvelHeroData = Array<Character>
 export type MarvelComicData = Array<Comic>

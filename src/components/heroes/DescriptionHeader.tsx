@@ -6,6 +6,8 @@ interface Props {
 }
 
 export default function DescriptionHeader({ description }: Props) {
+  if (!description) return null
+
   return (
     <View style={styles.container}>
       <Text style={styles.description}>{description}</Text>
