@@ -41,7 +41,7 @@ interface Props {
 }
 
 // Provider
-export function DataProvider({ children, maxItemsPerPage = 20 }: Props) {
+export function DataProvider({ children, maxItemsPerPage = 30 }: Props) {
   const [state, dispatch] = useReducer(reducer, initialState)
 
   const initialLoad = useCallback(() => {
@@ -55,7 +55,7 @@ export function DataProvider({ children, maxItemsPerPage = 20 }: Props) {
   const loadMoreHeroes = () => {
     api
       .get('/v1/public/characters', {
-        offset: state.heroes.offset + 30
+        offset: state.heroes.results.length + maxItemsPerPage
       })
       .then(res => {
         const apiResponse = res.data as MarvelApiResponse<MarvelHeroData>

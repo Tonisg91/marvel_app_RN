@@ -31,7 +31,7 @@ export default function List() {
           showsVerticalScrollIndicator={false}
           style={styles.list}
           onEndReached={loadMoreHeroes}
-          onEndReachedThreshold={0.6}
+          onEndReachedThreshold={0.4}
           ListFooterComponent={<ActivityIndicator size={40} color="white" />}
         />
       )}
