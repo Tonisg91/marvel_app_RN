@@ -3,10 +3,8 @@ import {
   ActivityIndicator,
   ImageBackground,
   StyleSheet,
-  FlatList,
-  View
+  FlatList
 } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
 import ListSeparator from '../../common/ListSeparator'
 import ListSpinner from '../../common/ListSpinner'
 import { useData } from '../context'
@@ -17,29 +15,27 @@ export default function List() {
   const { loading, heroes } = data
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <ImageBackground
-        style={styles.container}
-        source={require('../../../../assets/images/list-bg.jpg')}
-        resizeMode="stretch">
-        {loading ? (
-          <ListSpinner />
-        ) : (
-          <FlatList
-            data={heroes.results}
-            renderItem={({ item }) => <HeroCard hero={item} />}
-            numColumns={2}
-            keyExtractor={item => item.id.toString(36)}
-            ItemSeparatorComponent={ListSeparator}
-            showsVerticalScrollIndicator={false}
-            style={styles.list}
-            onEndReached={loadMoreHeroes}
-            onEndReachedThreshold={0.6}
-            ListFooterComponent={<ActivityIndicator size={40} color="white" />}
-          />
-        )}
-      </ImageBackground>
-    </SafeAreaView>
+    <ImageBackground
+      style={styles.container}
+      source={require('../../../../assets/images/list-bg.jpg')}
+      resizeMode="stretch">
+      {loading ? (
+        <ListSpinner />
+      ) : (
+        <FlatList
+          data={heroes.results}
+          renderItem={({ item }) => <HeroCard hero={item} />}
+          numColumns={2}
+          keyExtractor={item => item.id.toString()}
+          ItemSeparatorComponent={ListSeparator}
+          showsVerticalScrollIndicator={false}
+          style={styles.list}
+          onEndReached={loadMoreHeroes}
+          onEndReachedThreshold={0.6}
+          ListFooterComponent={<ActivityIndicator size={40} color="white" />}
+        />
+      )}
+    </ImageBackground>
   )
 }
 

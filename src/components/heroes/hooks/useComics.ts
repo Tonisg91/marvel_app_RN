@@ -1,13 +1,11 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect } from 'react'
 import { useData } from '../context'
 
 export default function useComics(characterId: number) {
   const { data, loadComics, loadMoreComics } = useData()
-  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     if (data.comics.length === 0) {
-      setLoading(true)
       loadComics(characterId)
     }
 
@@ -15,12 +13,9 @@ export default function useComics(characterId: number) {
     if (!hasElement) {
       loadComics(characterId)
     }
-
-    setLoading(false)
-  }, [])
+  }, [characterId, data.comics, loadComics])
 
   const requiredData = data.comics.find(elem => elem.id === characterId)
-  // console.log(requiredData?.data.results.length)
 
   const loadMore = () => {
     if (!requiredData) return
@@ -34,5 +29,5 @@ export default function useComics(characterId: number) {
     }
   }
 
-  return { loading, comics: requiredData?.data.results, loadMore }
+  return { comics: requiredData?.data.results, loadMore }
 }

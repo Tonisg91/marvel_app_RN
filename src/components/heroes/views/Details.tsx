@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import {
   FlatList,
   Image,
@@ -12,11 +12,9 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack'
 
 import { RootStackParams } from '../Navigation'
 import ListSeparator from '../../common/ListSeparator'
-import { useData } from '../context'
 import ComicCard from '../ComicCard'
 import DescriptionHeader from '../DescriptionHeader'
 import { Comic } from '../type'
-import ListSpinner from '../../common/ListSpinner'
 import useComics from '../hooks/useComics'
 
 interface Props
@@ -24,17 +22,15 @@ interface Props
 
 export default function Details({ route }: Props) {
   const { ...hero } = route.params
-  const { loading, comics, loadMore } = useComics(hero.id)
+  const { comics, loadMore } = useComics(hero.id)
 
   const imageUrl = `${hero.thumbnail.path}.${hero.thumbnail.extension}`
-
-  if (loading) return <ListSpinner />
 
   return (
     <ImageBackground
       style={styles.container}
       source={require('../../../../assets/images/hero-bg.jpg')}>
-      <View style={{ margin: 12 }}>
+      <View style={styles.imageContainer}>
         <Image
           source={{ uri: imageUrl }}
           style={styles.image}
@@ -50,7 +46,7 @@ export default function Details({ route }: Props) {
         contentContainerStyle={styles.listContent}
         renderItem={({ item }) => <ComicCard comic={item} />}
         numColumns={2}
-        keyExtractor={(item: Comic) => item.id.toString(36)}
+        keyExtractor={(item: Comic) => item.id.toString()}
         ItemSeparatorComponent={ListSeparator}
         ListHeaderComponent={() => (
           <DescriptionHeader description={hero.description} />
@@ -66,6 +62,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'white'
+  },
+  imageContainer: {
+    margin: 12
   },
   image: {
     width: '100%',

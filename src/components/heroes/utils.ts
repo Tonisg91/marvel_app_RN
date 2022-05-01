@@ -9,7 +9,7 @@ export function getAuthQueryStringParams(): AuthParams {
   }
 }
 
-function getPaginationQueryStringParams(
+export function getPaginationQueryStringParams(
   maxResults: number,
   page: number
 ): {

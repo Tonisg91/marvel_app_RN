@@ -1,9 +1,4 @@
-import {
-  Character,
-  InitStateContext,
-  MarvelHeroData,
-  MarvelResponseData
-} from '../type'
+import { InitStateContext } from '../type'
 
 const marvelResponse = {
   offset: 0,
@@ -54,7 +49,10 @@ export function reducer(
       return {
         ...state,
         loading: false,
-        comics: [{ id: action.payload.id, data: action.payload.data }]
+        comics: [
+          ...state.comics,
+          { id: action.payload.id, data: action.payload.data }
+        ]
       }
     case LOAD_MORE_COMICS: {
       return {

@@ -8,12 +8,12 @@ module.exports = {
       files: ['*.ts', '*.tsx'],
       rules: {
         '@typescript-eslint/no-shadow': ['error'],
+        '@typescript-eslint/no-unused-vars': ['warn'],
         'no-shadow': 'off',
         'no-undef': 'off',
-        semi: 'never',
-        'comma-dangle': 'never',
-        'no-unused-vars': 'warn',
-        'unused-imports/no-unused-imports': 'warn'
+        semi: 'off',
+        'comma-dangle': 'off',
+        curly: 'off'
       }
     }
   ]

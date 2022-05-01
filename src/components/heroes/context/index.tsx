@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useEffect, useReducer } from 'react'
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useReducer
+} from 'react'
 import { create } from 'apisauce'
 import { getAuthQueryStringParams } from '../utils'
 import {
@@ -15,7 +21,6 @@ import {
   INITIAL_LOAD,
   LOAD_MORE_HEROES,
   LOAD_COMICS,
-  FETCH_MORE,
   LOAD_MORE_COMICS
 } from './reducer'
 
@@ -39,15 +44,13 @@ interface Props {
 export function DataProvider({ children, maxItemsPerPage = 20 }: Props) {
   const [state, dispatch] = useReducer(reducer, initialState)
 
-  const initialLoad = () => {
-    api
-      .get('/v1/public/characters', { limit: state.heroes.limit })
-      .then(res => {
-        const apiResponse = res.data as MarvelApiResponse<Character>
+  const initialLoad = useCallback(() => {
+    api.get('/v1/public/characters', { limit: maxItemsPerPage }).then(res => {
+      const apiResponse = res.data as MarvelApiResponse<Character>
 
-        dispatch({ type: INITIAL_LOAD, payload: apiResponse.data })
-      })
-  }
+      dispatch({ type: INITIAL_LOAD, payload: apiResponse.data })
+    })
+  }, [maxItemsPerPage])
 
   const loadMoreHeroes = () => {
     api
@@ -65,7 +68,7 @@ export function DataProvider({ children, maxItemsPerPage = 20 }: Props) {
   const loadComics = (characterId: number) => {
     api
       .get(`/v1/public/characters/${characterId}/comics`, {
-        limit: 20
+        limit: maxItemsPerPage
       })
       .then(res => {
         const apiResponse = res.data as MarvelApiResponse<MarvelComicData>
@@ -81,7 +84,6 @@ export function DataProvider({ children, maxItemsPerPage = 20 }: Props) {
   }
 
   const loadMoreComics = (characterId: number, offset: number) => {
-    console.log('LOAD MORE COMICS')
     api
       .get(`/v1/public/characters/${characterId}/comics`, { offset })
       .then(res => {
@@ -98,7 +100,7 @@ export function DataProvider({ children, maxItemsPerPage = 20 }: Props) {
 
   useEffect(() => {
     initialLoad()
-  }, [])
+  }, [initialLoad])
 
   return (
     <DataContext.Provider
