@@ -41,7 +41,7 @@ interface Props {
 }
 
 // Provider
-export function DataProvider({ children, maxItemsPerPage = 30 }: Props) {
+export function DataProvider({ children, maxItemsPerPage }: Props) {
   const [state, dispatch] = useReducer(reducer, initialState)
 
   const initialLoad = useCallback(() => {
