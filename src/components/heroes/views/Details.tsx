@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import {
   FlatList,
   Image,
@@ -12,28 +12,25 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack'
 
 import { RootStackParams } from '../Navigation'
 import ListSeparator from '../../common/ListSeparator'
-import { useData } from '../context'
 import ComicCard from '../ComicCard'
 import DescriptionHeader from '../DescriptionHeader'
 import { Comic } from '../type'
+import useComics from '../hooks/useComics'
 
 interface Props
   extends NativeStackScreenProps<RootStackParams, 'Hero Details'> {}
 
 export default function Details({ route }: Props) {
-  const { data, loadComics, loadMoreComics } = useData()
   const { ...hero } = route.params
-  const imageUrl = `${hero.thumbnail.path}.${hero.thumbnail.extension}`
+  const { comics, loadMore } = useComics(hero.id)
 
-  useEffect(() => {
-    loadComics(hero.id.toString())
-  }, [])
+  const imageUrl = `${hero.thumbnail.path}.${hero.thumbnail.extension}`
 
   return (
     <ImageBackground
       style={styles.container}
       source={require('../../../../assets/images/hero-bg.jpg')}>
-      <View style={{ margin: 12 }}>
+      <View style={styles.imageContainer}>
         <Image
           source={{ uri: imageUrl }}
           style={styles.image}
@@ -44,17 +41,17 @@ export default function Details({ route }: Props) {
         </View>
       </View>
       <FlatList
-        data={data.comics.data}
+        data={comics}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.listContent}
         renderItem={({ item }) => <ComicCard comic={item} />}
         numColumns={2}
-        keyExtractor={(item: Comic) => item.id.toString(36)}
+        keyExtractor={(item: Comic) => item.id.toString()}
         ItemSeparatorComponent={ListSeparator}
         ListHeaderComponent={() => (
           <DescriptionHeader description={hero.description} />
         )}
-        onEndReached={() => loadMoreComics(hero.id.toString())}
+        onEndReached={loadMore}
         onEndReachedThreshold={0.4}
       />
     </ImageBackground>
@@ -65,6 +62,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'white'
+  },
+  imageContainer: {
+    margin: 12
   },
   image: {
     width: '100%',

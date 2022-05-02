@@ -30,7 +30,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const login = async ({ email, password }: AuthInput) => {
-    const foundUser = FakeUsers.find(user => user.email === email)
+    const foundUser = FakeUsers.find(u => u.email === email)
 
     if (!foundUser) {
       console.warn('User not found.')

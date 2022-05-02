@@ -1,20 +1,8 @@
 export type DataContextProps = {
   data: InitStateContext
   loadMoreHeroes: () => void
-  loadComics: (characterId: string) => void
-  loadMoreComics: (characterId: string) => void
-}
-
-interface MarvelDataContext<T> {
-  offset: number
-  limit: number
-  data: T
-}
-
-export type InitStateContext = {
-  heroes: MarvelDataContext<MarvelHeroData>
-  comics: MarvelDataContext<MarvelComicData>
-  fetching: boolean
+  loadComics: (characterId: number) => void
+  loadMoreComics: (characterId: number, offset) => void
 }
 
 export type MarvelApiResponse<T> = {
@@ -35,6 +23,17 @@ export type MarvelResponseData<T> = {
   results: T
 }
 
+export type MarvelComic = {
+  id: number
+  data: MarvelResponseData<MarvelComicData>
+}
+
+export type InitStateContext = {
+  heroes: MarvelResponseData<MarvelHeroData>
+  comics: MarvelComic[]
+  loading: boolean
+}
+
 export type MarvelResponse =
   | MarvelResponse<MarvelHeroData>
   | MarvelResponse<MarvelComicData>
@@ -47,27 +46,6 @@ export interface AuthParams {
   apikey: string
   ts: string
   hash: string
-}
-export interface TextObject {
-  type: string
-  language: string
-  text: string
-}
-export interface Image {
-  path: string
-  extension: string
-}
-
-export interface URL {
-  type: string
-  url: string
-}
-
-export interface Resource {
-  available: number
-  returned: number
-  collectionURI: string
-  items: any[] // Check
 }
 
 export interface Character {
@@ -110,8 +88,30 @@ export interface Comic {
   prices: any[]
   thumbnail: Image
   images: Image[]
-  creators: Resource[]
-  characters: Resource[]
-  stories: Resource[]
-  events: Resource[]
+  creators: Resource
+  characters: Resource
+  stories: Resource
+  events: Resource
+}
+
+export interface TextObject {
+  type: string
+  language: string
+  text: string
+}
+export interface Image {
+  path: string
+  extension: string
+}
+
+export interface URL {
+  type: string
+  url: string
+}
+
+export interface Resource {
+  available: number
+  returned: number
+  collectionURI: string
+  items: any[] // Check
 }

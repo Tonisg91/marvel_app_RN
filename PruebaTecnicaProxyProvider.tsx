@@ -9,6 +9,96 @@ import {
 } from 'react'
 import { FlatList, Text, View } from 'react-native'
 
+type MarvelResponseDataContainer<T> = {
+  offset: number
+  limit: number
+  total: number
+  count: number
+  results: T
+}
+
+type MarvelListResponse<T> = {
+  code: number
+  status: string
+  copyright: string
+  attributionText: string
+  attributionHTML: string
+  data: MarvelResponseDataContainer<T>
+  etag: string
+}
+
+type MarvelHeroesListResponse = {
+  code: number
+  status: string
+  copyright: string
+  attributionText: string
+  attributionHTML: string
+  data: {}
+  etag: string
+}
+
+type MarvelHeroComicsListResponse = {
+  code: number
+  status: string
+  copyright: string
+  attributionText: string
+  attributionHTML: string
+  data: {}
+  etag: string
+}
+
+type MarvelResponse = MarvelHeroesListResponse | MarvelHeroComicsListResponse
+
+export interface Character {
+  id: number
+  name: string
+  description: string
+  modified: Date
+  resourceURI: string
+  urls: URL[]
+  thumbnail: Image
+  comics: Resource
+  stories: Resource
+  events: Resource
+  series: Resource
+}
+
+export interface Comic {
+  id: number
+  digitalId: number
+  title: string
+  issueNumber: number
+  variantDescription: string
+  description: string
+  modified: Date
+  isbn: string
+  upc: string
+  diamondCode: string
+  ean: string
+  issn: string
+  format: string
+  pageCount: number
+  textObjects: TextObject[]
+  resourceURI: string
+  urls: URL[]
+  series: any // TODO: check
+  variants: any[] // check
+  collections: any[]
+  collectedIssues: any[]
+  dates: any[]
+  prices: any[]
+  thumbnail: Image
+  images: Image[]
+  creators: Resource[]
+  characters: Resource[]
+  stories: Resource[]
+  events: Resource[]
+}
+
+type MarvelHeroData = Array<{}> //TODO tipar los datos de héroes
+type MarvelComicData = Array<{}> //TODO: tipar los datos de cómics
+type MarvelData = MarvelHeroData | MarvelComicData
+
 type ContextStateUninitialized = {
   url?: undefined
   isFetching: false
@@ -161,7 +251,6 @@ export function CachedRequestsProvider({
     isFetching: false,
     url
   } as ContextStateInitialized)
-
   const [page, setPage] = useState(0)
 
   const getNavigatableUrl = useCallback((): string => {

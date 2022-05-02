@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { memo } from 'react'
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
@@ -7,7 +7,7 @@ import Icon from 'react-native-vector-icons/Ionicons'
 import { Character } from './type'
 import { RootStackParams } from './Navigation'
 
-export default function HeroCard({ hero }: { hero: Character }) {
+function HeroCard({ hero }: { hero: Character }) {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParams>>()
 
   const goDetails = () => navigation.navigate('Hero Details', hero)
@@ -36,6 +36,8 @@ export default function HeroCard({ hero }: { hero: Character }) {
     </TouchableOpacity>
   )
 }
+
+export default memo(HeroCard)
 
 const styles = StyleSheet.create({
   container: {
