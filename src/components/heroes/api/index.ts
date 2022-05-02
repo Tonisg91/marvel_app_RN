@@ -52,7 +52,7 @@ export const marvelProxy = new Proxy<MarvelResponse>(
           const response = await (
             target as {
               results: {
-                [key in string]?: T
+                [key in string]?: MarvelResponse
               }
               apiInstance: ApisauceInstance
             }
@@ -70,9 +70,9 @@ export const marvelProxy = new Proxy<MarvelResponse>(
                 [key in string]?: T
               }
             }
-          ).results[url] = data
+          ).results[url] = data.data.results
 
-          return data
+          resolve(data.data.results)
         } catch (e) {
           reject(e)
         }

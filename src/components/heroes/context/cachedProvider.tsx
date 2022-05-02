@@ -1,5 +1,11 @@
 import { ApisauceInstance } from 'apisauce'
-import React, { createContext, useCallback, useEffect, useState } from 'react'
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState
+} from 'react'
 import { marvelProxy } from '../api'
 import { MarvelData } from '../type'
 import { getPaginationQueryStringParams } from '../utils'
@@ -53,6 +59,13 @@ const ApiRequestContext = createContext<
   [ApiRequestContextState<MarvelData>, IActions]
 >([initialState as ContextStateUninitialized, { paginate: () => undefined }])
 
+export const useCachedRequests = (): [
+  ApiRequestContextState<MarvelData>,
+  IActions
+] => {
+  return useContext(ApiRequestContext)
+}
+
 export function CachedRequestsProvider({
   children,
   url,
@@ -81,7 +94,7 @@ export function CachedRequestsProvider({
 
     const definitveUrl = newUrl.toString()
     return definitveUrl
-  }, [page, state])
+  }, [page, maxResultsPerPage, url])
 
   const paginate = () => setPage(page + 1)
 
@@ -104,6 +117,18 @@ export function CachedRequestsProvider({
 
     marvelProxy[getNavigatableUrl()]
       .then(value => {
+        if (state.data && state.data[url]) {
+          setState({
+            ...state,
+            isFetching: false,
+            data: {
+              ...state.data,
+              [url]: [...state.data[url], ...value]
+            }
+          })
+          return
+        }
+
         setState({
           ...state,
           isFetching: false,
@@ -115,6 +140,8 @@ export function CachedRequestsProvider({
       })
       .catch(console.error)
   }, [page, url])
+
+  console.log(state)
 
   return (
     <ApiRequestContext.Provider
