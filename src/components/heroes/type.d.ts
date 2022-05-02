@@ -35,8 +35,8 @@ export type InitStateContext = {
 }
 
 export type MarvelResponse =
-  | MarvelResponse<MarvelHeroData>
-  | MarvelResponse<MarvelComicData>
+  | MarvelApiResponse<MarvelHeroData>
+  | MarvelApiResponse<MarvelComicData>
 
 export type MarvelHeroData = Array<Character>
 export type MarvelComicData = Array<Comic>

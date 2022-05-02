@@ -5,21 +5,22 @@ import {
   StyleSheet,
   FlatList
 } from 'react-native'
+import { useCachedRequests } from '../../../../PruebaTecnicaProxyProvider'
 import ListSeparator from '../../common/ListSeparator'
 import ListSpinner from '../../common/ListSpinner'
-import { useData } from '../context'
+import { CachedRequestsProvider } from '../context/cachedProvider'
 import HeroCard from '../HeroCard'
 
-export default function List() {
-  const { data, loadMoreHeroes } = useData()
-  const { loading, heroes } = data
+function List() {
+  const state = useCachedRequests()
+  console.log(state)
 
   return (
     <ImageBackground
       style={styles.container}
       source={require('../../../../assets/images/list-bg.jpg')}
       resizeMode="stretch">
-      {loading ? (
+      {/* {loading ? (
         <ListSpinner />
       ) : (
         <FlatList
@@ -34,8 +35,18 @@ export default function List() {
           onEndReachedThreshold={0.4}
           ListFooterComponent={<ActivityIndicator size={40} color="white" />}
         />
-      )}
+      )} */}
     </ImageBackground>
+  )
+}
+
+export default function CachedList() {
+  return (
+    <CachedRequestsProvider
+      maxResultsPerPage={30}
+      url="https://gateway.marvel.com//v1/public/characters">
+      <List />
+    </CachedRequestsProvider>
   )
 }
 

@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import { TouchableOpacity } from 'react-native'
 import { NavigationContainer } from '@react-navigation/native'
 
 import Login from './src/components/auth/Login'
@@ -14,7 +13,8 @@ import SettingsModal, {
 function AppState({ children }: { children: React.ReactNode }) {
   return (
     <AuthProvider>
-      <DataProvider maxItemsPerPage={30}>{children}</DataProvider>
+      {/* <DataProvider maxItemsPerPage={30}>{children}</DataProvider> */}
+      {children}
     </AuthProvider>
   )
 }

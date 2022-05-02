@@ -24,7 +24,7 @@ import {
   LOAD_MORE_COMICS
 } from './reducer'
 
-const api = create({
+export const api = create({
   baseURL: 'https://gateway.marvel.com/',
   params: getAuthQueryStringParams()
 })

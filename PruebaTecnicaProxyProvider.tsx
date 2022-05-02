@@ -1,5 +1,5 @@
-import { ApisauceInstance, create } from 'apisauce'
 import * as React from 'react'
+import { ApisauceInstance, create } from 'apisauce'
 import {
   createContext,
   useCallback,
