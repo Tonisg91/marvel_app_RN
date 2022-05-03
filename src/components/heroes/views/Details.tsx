@@ -14,15 +14,24 @@ import { RootStackParams } from '../Navigation'
 import ListSeparator from '../../common/ListSeparator'
 import ComicCard from '../ComicCard'
 import DescriptionHeader from '../DescriptionHeader'
-import { Comic } from '../type'
-import useComics from '../hooks/useComics'
+import { Character, Comic } from '../type'
+import {
+  CachedRequestsProvider,
+  useCachedRequests
+} from '../context/cachedProvider'
+import FullPageLoader from '../../common/FullPageLoader'
 
 interface Props
   extends NativeStackScreenProps<RootStackParams, 'Hero Details'> {}
 
-export default function Details({ route }: Props) {
-  const { ...hero } = route.params
-  const { comics, loadMore } = useComics(hero.id)
+function Details({ hero }: { hero: Character }) {
+  const [{ url, data }, { paginate }] = useCachedRequests()
+
+  if (!data) {
+    return <FullPageLoader />
+  }
+
+  // TODO: Utilizar paginación y refactor general
 
   const imageUrl = `${hero.thumbnail.path}.${hero.thumbnail.extension}`
 
@@ -41,7 +50,7 @@ export default function Details({ route }: Props) {
         </View>
       </View>
       <FlatList
-        data={comics}
+        data={data[url]}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.listContent}
         renderItem={({ item }) => <ComicCard comic={item} />}
@@ -51,10 +60,21 @@ export default function Details({ route }: Props) {
         ListHeaderComponent={() => (
           <DescriptionHeader description={hero.description} />
         )}
-        onEndReached={loadMore}
+        onEndReached={() => {}}
         onEndReachedThreshold={0.4}
       />
     </ImageBackground>
+  )
+}
+
+export default function CachedDetails({ route }: Props) {
+  const { ...hero } = route.params
+  const urlToFetch = `https://gateway.marvel.com/v1/public/characters/${hero.id}/comics`
+
+  return (
+    <CachedRequestsProvider maxResultsPerPage={30} url={urlToFetch}>
+      <Details hero={hero} />
+    </CachedRequestsProvider>
   )
 }
 

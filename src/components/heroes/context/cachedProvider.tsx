@@ -86,7 +86,6 @@ export function CachedRequestsProvider({
     const queryString = getPaginationQueryStringParams(maxResultsPerPage, page)
 
     Object.entries({
-      // ...authParams,
       ...queryString
     }).forEach(([key, value]) => {
       newUrl.searchParams.append(key, value)
@@ -140,8 +139,6 @@ export function CachedRequestsProvider({
       })
       .catch(console.error)
   }, [page, url])
-
-  console.log(state)
 
   return (
     <ApiRequestContext.Provider
