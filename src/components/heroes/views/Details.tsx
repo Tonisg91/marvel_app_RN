@@ -66,10 +66,7 @@ export default function CachedDetails({ route }: Props) {
   const urlToFetch = `https://gateway.marvel.com/v1/public/characters/${hero.id}/comics`
 
   return (
-    <CachedRequestsProvider
-      maxResultsPerPage={10}
-      url={urlToFetch}
-      heroId={hero.id}>
+    <CachedRequestsProvider maxResultsPerPage={10} url={urlToFetch}>
       <Details {...{ hero }} />
     </CachedRequestsProvider>
   )

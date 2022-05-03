@@ -38,7 +38,6 @@ interface IActions {
 export type CachedDataContextProps = {
   url: string
   maxResultsPerPage: number
-  heroId?: number
   children: JSX.Element
 }
 

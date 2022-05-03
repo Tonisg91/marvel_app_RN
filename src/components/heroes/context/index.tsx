@@ -16,7 +16,7 @@ import {
   IActions,
   MarvelData
 } from '../type'
-import { getPaginationQueryStringParams } from '../utils'
+import { getFullUrl, getPaginationQueryStringParams } from '../utils'
 
 const initialState = {
   isFetching: false
@@ -36,8 +36,7 @@ export const useCachedRequests = (): [
 export function CachedRequestsProvider({
   children,
   url,
-  maxResultsPerPage,
-  heroId
+  maxResultsPerPage
 }: CachedDataContextProps) {
   const [state, setState] = useState<ApiRequestContextState<MarvelData>>({
     isFetching: false,
@@ -45,23 +44,10 @@ export function CachedRequestsProvider({
   } as ContextStateInitialized)
   const [page, setPage] = useState(0)
 
-  const getNavigatableUrl = useCallback((): string => {
-    // new URL is broken in RN. Adds trailing slash.
-    // https://github.com/facebook/react-native/issues/24428
-    // Added polyfill https://github.com/charpeni/react-native-url-polyfill
-    const newUrl = new URL(url)
-
-    const queryString = getPaginationQueryStringParams(maxResultsPerPage, page)
-
-    Object.entries({
-      ...queryString
-    }).forEach(([key, value]) => {
-      newUrl.searchParams.append(key, value)
-    })
-
-    const definitveUrl = newUrl.toString()
-    return definitveUrl
-  }, [page, maxResultsPerPage, url])
+  const getNavigatableUrl = useCallback(
+    (): string => getFullUrl(url, { maxResultsPerPage, page }),
+    [page, maxResultsPerPage, url]
+  )
 
   const paginate = () => {
     if (!state.data?.[url]) return
