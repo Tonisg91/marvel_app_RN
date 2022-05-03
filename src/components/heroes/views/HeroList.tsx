@@ -5,13 +5,13 @@ import {
   StyleSheet,
   FlatList
 } from 'react-native'
-import { useCachedRequests } from '../context/cachedProvider'
-import ListSeparator from '../../common/ListSeparator'
-import { CachedRequestsProvider } from '../context/cachedProvider'
-import HeroCard from '../HeroCard'
-import FullPageLoader from '../../common/FullPageLoader'
 
-function List() {
+import HeroCard from '../HeroCard'
+import ListSeparator from '../../common/ListSeparator'
+import FullPageLoader from '../../common/FullPageLoader'
+import { useCachedRequests, CachedRequestsProvider } from '../context'
+
+function HeroList() {
   const [state, { paginate }] = useCachedRequests()
   const { url, data } = state
 
@@ -25,7 +25,7 @@ function List() {
       source={require('../../../../assets/images/list-bg.jpg')}
       resizeMode="stretch">
       <FlatList
-        data={data[url]}
+        data={data[url].results}
         renderItem={({ item }) => <HeroCard hero={item} />}
         numColumns={2}
         keyExtractor={item => item.id.toString()}
@@ -45,7 +45,7 @@ export default function CachedList() {
     <CachedRequestsProvider
       maxResultsPerPage={30}
       url="https://gateway.marvel.com/v1/public/characters">
-      <List />
+      <HeroList />
     </CachedRequestsProvider>
   )
 }

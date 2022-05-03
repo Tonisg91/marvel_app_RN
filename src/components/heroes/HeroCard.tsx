@@ -10,7 +10,7 @@ import { RootStackParams } from './Navigation'
 function HeroCard({ hero }: { hero: Character }) {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParams>>()
 
-  const goDetails = () => navigation.navigate('Hero Details', hero)
+  const goDetails = () => navigation.navigate('Hero Details', { hero })
 
   return (
     <TouchableOpacity style={styles.container} onPress={goDetails}>

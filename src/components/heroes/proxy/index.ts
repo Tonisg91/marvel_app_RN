@@ -1,5 +1,5 @@
 import { ApisauceInstance, create } from 'apisauce'
-import { MarvelResponse } from '../type'
+import { MarvelResponse, MarvelResponseData } from '../type'
 import { getAuthQueryStringParams } from '../utils'
 
 type ProxyHandler<T, P extends string> = {
@@ -19,7 +19,7 @@ declare const Proxy: {
   ): { [key: string]: Promise<T> }
 }
 
-export const marvelProxy = new Proxy<MarvelResponse>(
+export const marvelProxy = new Proxy<MarvelResponseData>(
   {
     apiInstance: create({
       baseURL: 'https://gateway.marvel.com',
@@ -28,7 +28,7 @@ export const marvelProxy = new Proxy<MarvelResponse>(
     results: {}
   },
   {
-    get: function <T extends MarvelResponse>(
+    get: function <T extends MarvelResponseData>(
       values: {
         results: {
           [key in string]?: T
@@ -68,9 +68,9 @@ export const marvelProxy = new Proxy<MarvelResponse>(
                 [key in string]?: T
               }
             }
-          ).results[url] = data.data.results
+          ).results[url] = data.data
 
-          resolve(data.data.results)
+          resolve(data.data)
         } catch (e) {
           reject(e)
         }

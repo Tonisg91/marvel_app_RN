@@ -1,5 +1,4 @@
 import { useEffect } from 'react'
-import { useData } from '../context'
 
 export default function useComics(characterId: number) {
   const { data, loadComics, loadMoreComics } = useData()

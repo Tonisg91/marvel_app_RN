@@ -7,19 +7,15 @@ import {
   View,
   ImageBackground
 } from 'react-native'
-
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 
-import { RootStackParams } from '../Navigation'
-import ListSeparator from '../../common/ListSeparator'
 import ComicCard from '../ComicCard'
-import DescriptionHeader from '../DescriptionHeader'
 import { Character, Comic } from '../type'
-import {
-  CachedRequestsProvider,
-  useCachedRequests
-} from '../context/cachedProvider'
+import { RootStackParams } from '../Navigation'
+import DescriptionHeader from '../DescriptionHeader'
+import ListSeparator from '../../common/ListSeparator'
 import FullPageLoader from '../../common/FullPageLoader'
+import { CachedRequestsProvider, useCachedRequests } from '../context'
 
 interface Props
   extends NativeStackScreenProps<RootStackParams, 'Hero Details'> {}
@@ -30,8 +26,6 @@ function Details({ hero }: { hero: Character }) {
   if (!data) {
     return <FullPageLoader />
   }
-
-  // TODO: Utilizar paginación y refactor general
 
   const imageUrl = `${hero.thumbnail.path}.${hero.thumbnail.extension}`
 
@@ -50,7 +44,7 @@ function Details({ hero }: { hero: Character }) {
         </View>
       </View>
       <FlatList
-        data={data[url]}
+        data={data[url].results}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.listContent}
         renderItem={({ item }) => <ComicCard comic={item} />}
@@ -60,20 +54,23 @@ function Details({ hero }: { hero: Character }) {
         ListHeaderComponent={() => (
           <DescriptionHeader description={hero.description} />
         )}
-        onEndReached={() => {}}
-        onEndReachedThreshold={0.4}
+        onEndReached={paginate}
+        onEndReachedThreshold={0.5}
       />
     </ImageBackground>
   )
 }
 
 export default function CachedDetails({ route }: Props) {
-  const { ...hero } = route.params
+  const { hero } = route.params
   const urlToFetch = `https://gateway.marvel.com/v1/public/characters/${hero.id}/comics`
 
   return (
-    <CachedRequestsProvider maxResultsPerPage={30} url={urlToFetch}>
-      <Details hero={hero} />
+    <CachedRequestsProvider
+      maxResultsPerPage={10}
+      url={urlToFetch}
+      heroId={hero.id}>
+      <Details {...{ hero }} />
     </CachedRequestsProvider>
   )
 }

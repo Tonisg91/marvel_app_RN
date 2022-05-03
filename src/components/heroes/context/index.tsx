@@ -3,114 +3,132 @@ import React, {
   useCallback,
   useContext,
   useEffect,
-  useReducer
+  useState
 } from 'react'
-import { create } from 'apisauce'
-import { getAuthQueryStringParams } from '../utils'
+
+import { marvelProxy } from '../proxy'
 import {
-  Character,
-  DataContextProps,
-  MarvelApiResponse,
-  MarvelComic,
-  MarvelComicData,
-  MarvelHeroData
+  ApiRequestContextState,
+  CachedDataContextProps,
+  ContextStateFetched,
+  ContextStateInitialized,
+  ContextStateUninitialized,
+  IActions,
+  MarvelData
 } from '../type'
-import {
-  reducer,
-  initialState,
-  INITIAL_LOAD,
-  LOAD_MORE_HEROES,
-  LOAD_COMICS,
-  LOAD_MORE_COMICS
-} from './reducer'
+import { getPaginationQueryStringParams } from '../utils'
 
-export const api = create({
-  baseURL: 'https://gateway.marvel.com/',
-  params: getAuthQueryStringParams()
-})
-
-// Context
-const DataContext = createContext({} as DataContextProps)
-
-// Hook
-export const useData = () => useContext(DataContext)
-
-interface Props {
-  children: React.ReactNode
-  maxItemsPerPage: number
+const initialState = {
+  isFetching: false
 }
 
-// Provider
-export function DataProvider({ children, maxItemsPerPage }: Props) {
-  const [state, dispatch] = useReducer(reducer, initialState)
+const ApiRequestContext = createContext<
+  [ApiRequestContextState<MarvelData>, IActions]
+>([initialState as ContextStateUninitialized, { paginate: () => undefined }])
 
-  const initialLoad = useCallback(() => {
-    api.get('/v1/public/characters', { limit: maxItemsPerPage }).then(res => {
-      const apiResponse = res.data as MarvelApiResponse<Character>
+export const useCachedRequests = (): [
+  ApiRequestContextState<MarvelData>,
+  IActions
+] => {
+  return useContext(ApiRequestContext)
+}
 
-      dispatch({ type: INITIAL_LOAD, payload: apiResponse.data })
+export function CachedRequestsProvider({
+  children,
+  url,
+  maxResultsPerPage,
+  heroId
+}: CachedDataContextProps) {
+  const [state, setState] = useState<ApiRequestContextState<MarvelData>>({
+    isFetching: false,
+    url
+  } as ContextStateInitialized)
+  const [page, setPage] = useState(0)
+
+  const getNavigatableUrl = useCallback((): string => {
+    // new URL is broken in RN. Adds trailing slash.
+    // https://github.com/facebook/react-native/issues/24428
+    // Added polyfill https://github.com/charpeni/react-native-url-polyfill
+    const newUrl = new URL(url)
+
+    const queryString = getPaginationQueryStringParams(maxResultsPerPage, page)
+
+    Object.entries({
+      ...queryString
+    }).forEach(([key, value]) => {
+      newUrl.searchParams.append(key, value)
     })
-  }, [maxItemsPerPage])
 
-  const loadMoreHeroes = () => {
-    api
-      .get('/v1/public/characters', {
-        offset: state.heroes.results.length + maxItemsPerPage
-      })
-      .then(res => {
-        const apiResponse = res.data as MarvelApiResponse<MarvelHeroData>
+    const definitveUrl = newUrl.toString()
+    return definitveUrl
+  }, [page, maxResultsPerPage, url])
 
-        dispatch({ type: LOAD_MORE_HEROES, payload: apiResponse.data.results })
-      })
-      .catch(console.error)
-  }
+  const paginate = () => {
+    if (!state.data?.[url]) return
 
-  const loadComics = (characterId: number) => {
-    api
-      .get(`/v1/public/characters/${characterId}/comics`, {
-        limit: maxItemsPerPage
-      })
-      .then(res => {
-        const apiResponse = res.data as MarvelApiResponse<MarvelComicData>
+    const totalResults: number = state.data[url].total
+    const canFetchMore = page + 1 * maxResultsPerPage < totalResults
 
-        const payload: MarvelComic = {
-          id: characterId,
-          data: apiResponse.data
-        }
-
-        dispatch({ type: LOAD_COMICS, payload })
-      })
-      .catch(console.error)
-  }
-
-  const loadMoreComics = (characterId: number, offset: number) => {
-    api
-      .get(`/v1/public/characters/${characterId}/comics`, { offset })
-      .then(res => {
-        const apiResponse = res.data as MarvelApiResponse<MarvelComicData>
-
-        const payload: MarvelComic = {
-          id: characterId,
-          data: apiResponse.data
-        }
-
-        dispatch({ type: LOAD_MORE_COMICS, payload })
-      })
+    canFetchMore && setPage(page + 1)
   }
 
   useEffect(() => {
-    initialLoad()
-  }, [initialLoad])
+    if (state.isFetching || !state.url) {
+      return
+    }
+
+    setState(
+      state.url !== url
+        ? {
+            isFetching: true,
+            url
+          }
+        : {
+            ...state,
+            isFetching: true
+          }
+    )
+
+    marvelProxy[getNavigatableUrl()]
+      .then(value => {
+        // catch if url includes comics
+
+        if (state.data && state.data[url]) {
+          setState({
+            ...state,
+            isFetching: false,
+            data: {
+              ...state.data,
+              [url]: {
+                ...state.data[url],
+                results: [...state.data[url].results, ...value.results]
+              }
+            }
+          })
+          return
+        }
+
+        setState({
+          ...state,
+          isFetching: false,
+          data: {
+            ...(state.data ?? {}),
+            [url]: value
+          }
+        } as ContextStateFetched<MarvelData>)
+      })
+      .catch(console.error)
+  }, [page, url])
 
   return (
-    <DataContext.Provider
-      value={{
-        data: state,
-        loadMoreHeroes,
-        loadComics,
-        loadMoreComics
-      }}>
+    <ApiRequestContext.Provider
+      value={[
+        state,
+        {
+          paginate
+        }
+      ]}>
       {children}
-    </DataContext.Provider>
+    </ApiRequestContext.Provider>
   )
 }

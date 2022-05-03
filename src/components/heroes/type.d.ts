@@ -38,14 +38,8 @@ interface IActions {
 export type CachedDataContextProps = {
   url: string
   maxResultsPerPage: number
+  heroId?: number
   children: JSX.Element
-}
-
-export type DataContextProps = {
-  data: InitStateContext
-  loadMoreHeroes: () => void
-  loadComics: (characterId: number) => void
-  loadMoreComics: (characterId: number, offset) => void
 }
 
 export type MarvelApiResponse<T> = {
@@ -58,23 +52,12 @@ export type MarvelApiResponse<T> = {
   status: string
 }
 
-export type MarvelResponseData<T> = {
+export type MarvelResponseData = {
   offset: number
   limit: number
   total: number
   count: number
-  results: T
-}
-
-export type MarvelComic = {
-  id: number
-  data: MarvelResponseData<MarvelComicData>
-}
-
-export type InitStateContext = {
-  heroes: MarvelResponseData<MarvelHeroData>
-  comics: MarvelComic[]
-  loading: boolean
+  results: MarvelData
 }
 
 export type MarvelResponse =
