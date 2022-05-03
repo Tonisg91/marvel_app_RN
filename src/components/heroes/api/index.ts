@@ -29,15 +29,13 @@ export const marvelProxy = new Proxy<MarvelResponse>(
   },
   {
     get: function <T extends MarvelResponse>(
-      target: {
+      values: {
         results: {
           [key in string]?: T
         }
       },
       url: string
     ) {
-      const values = target
-
       return new Promise<T>(async (resolve, reject) => {
         if (
           values.results.hasOwnProperty(url) ||
@@ -50,7 +48,7 @@ export const marvelProxy = new Proxy<MarvelResponse>(
 
         try {
           const response = await (
-            target as {
+            values as {
               results: {
                 [key in string]?: MarvelResponse
               }
@@ -65,7 +63,7 @@ export const marvelProxy = new Proxy<MarvelResponse>(
           const { data } = response
 
           ;(
-            target as {
+            values as {
               results: {
                 [key in string]?: T
               }

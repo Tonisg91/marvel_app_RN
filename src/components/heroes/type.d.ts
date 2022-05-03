@@ -1,3 +1,46 @@
+import { ApisauceInstance } from 'apisauce'
+
+type ContextStateUninitialized = {
+  url?: undefined
+  isFetching: false
+  data?: undefined
+}
+
+type ContextStateInitialized = {
+  url: string
+  isFetching: false
+  data?: undefined
+}
+
+type ContextStateFetching<T> = {
+  url: string
+  isFetching: true
+  data?: T
+}
+
+type ContextStateFetched<T> = {
+  url: string
+  isFetching: false
+  data: T
+  apisauceInstance: ApisauceInstance
+}
+
+type ApiRequestContextState<T> =
+  | ContextStateUninitialized
+  | ContextStateInitialized
+  | ContextStateFetching<T>
+  | ContextStateFetched<T>
+
+interface IActions {
+  paginate(): void
+}
+
+export type CachedDataContextProps = {
+  url: string
+  maxResultsPerPage: number
+  children: JSX.Element
+}
+
 export type DataContextProps = {
   data: InitStateContext
   loadMoreHeroes: () => void

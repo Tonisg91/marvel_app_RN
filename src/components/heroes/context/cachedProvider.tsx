@@ -1,4 +1,3 @@
-import { ApisauceInstance } from 'apisauce'
 import React, {
   createContext,
   useCallback,
@@ -7,49 +6,15 @@ import React, {
   useState
 } from 'react'
 import { marvelProxy } from '../api'
-import { MarvelData } from '../type'
+import {
+  ApiRequestContextState,
+  CachedDataContextProps,
+  ContextStateInitialized,
+  ContextStateUninitialized,
+  IActions,
+  MarvelData
+} from '../type'
 import { getPaginationQueryStringParams } from '../utils'
-
-type Props = {
-  url: string
-  maxResultsPerPage: number
-  children: JSX.Element
-}
-
-type ContextStateUninitialized = {
-  url?: undefined
-  isFetching: false
-  data?: undefined
-}
-
-type ContextStateInitialized = {
-  url: string
-  isFetching: false
-  data?: undefined
-}
-
-type ContextStateFetching<T> = {
-  url: string
-  isFetching: true
-  data?: T
-}
-
-type ContextStateFetched<T> = {
-  url: string
-  isFetching: false
-  data: T
-  apisauceInstance: ApisauceInstance
-}
-
-type ApiRequestContextState<T> =
-  | ContextStateUninitialized
-  | ContextStateInitialized
-  | ContextStateFetching<T>
-  | ContextStateFetched<T>
-
-interface IActions {
-  paginate(): void
-}
 
 const initialState = {
   isFetching: false
@@ -70,7 +35,7 @@ export function CachedRequestsProvider({
   children,
   url,
   maxResultsPerPage
-}: Props) {
+}: CachedDataContextProps) {
   const [state, setState] = useState<ApiRequestContextState<MarvelData>>({
     isFetching: false,
     url
