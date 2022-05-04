@@ -14,15 +14,19 @@ En [Dev](https://github.com/Tonisg91/marvel_app_RN/tree/dev) está la versión 1
 
 Los datos de autenticación están en el archivo src/seeds.json
 
-Hay un polyfill para el objeto URL nativo de JS. En la versión solicitada por las directrices, el dicho objeto añade un "/" al final de la URL e imposibilita la consulta.
+---
+
+Hay un polyfill para el objeto URL nativo de JS. En la versión de RN solicitada por las directrices, dicho objeto añade un "/" al final de la URL e imposibilita la consulta.
 
 [Issue](https://github.com/facebook/react-native/issues/24428)
 
 [Polifyll](https://github.com/charpeni/react-native-url-polyfill)
 
+---
+
 Mi experiencia con Typescript es un poco limitada. Veréis algunos fallos de tipado o tipos impuestos "a lo bruto" con la keyword "as".
 
-## Descripción:
+## Descripción de la prueba:
 
 Solicitamos que desarrolle una app con React-Native v0.63 que conste de un login simulado
 (mediante un servicio mockeado local que sólo deje a acceder con una dirección de correo
