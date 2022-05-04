@@ -55,7 +55,7 @@ function Details({ hero }: { hero: Character }) {
           <DescriptionHeader description={hero.description} />
         )}
         onEndReached={paginate}
-        onEndReachedThreshold={0.5}
+        onEndReachedThreshold={0.6}
       />
     </ImageBackground>
   )
@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
   },
   image: {
     width: '100%',
-    height: 300,
+    height: 250,
     borderRadius: 15
   },
   infoContainer: {

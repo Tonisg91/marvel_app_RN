@@ -120,7 +120,7 @@ export function CachedRequestsProvider({
     setIsFetching()
 
     getProxyData()
-  }, [page, url, getProxyData, setIsFetching])
+  }, [page, url])
 
   return (
     <ApiRequestContext.Provider
