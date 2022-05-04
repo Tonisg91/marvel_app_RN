@@ -11,14 +11,13 @@ import {
   ApiRequestContextState,
   CachedDataContextProps,
   ContextStateFetched,
-  ContextStateFetching,
   ContextStateInitialized,
   ContextStateUninitialized,
   IActions,
   MarvelData,
   MarvelResponseData
 } from '../type'
-import { getFullUrl, getPaginationQueryStringParams } from '../utils'
+import { getFullUrl } from '../utils'
 
 const initialState = {
   isFetching: false
