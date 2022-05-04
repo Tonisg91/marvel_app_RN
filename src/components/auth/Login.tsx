@@ -8,10 +8,9 @@ import { AuthErrors, AuthInput } from './type'
 import CustomButton from '../common/CustomButton'
 
 export default function Login() {
+  const { login } = useAuth()
   const [values, setValues] = useState<AuthInput>({ email: '', password: '' })
   const [errors, setErrors] = useState<AuthErrors>({})
-
-  const { login } = useAuth()
 
   const handleChange = (field: string) => (value: string) =>
     setValues({ ...values, [field]: value })
@@ -20,6 +19,7 @@ export default function Login() {
     if (!values.email || !values.password) return
 
     if (!EMAIL_REGEX.test(values.email)) {
+      console.log(values.email)
       setErrors({ ...errors, email: 'Bad email format.' })
       return
     }

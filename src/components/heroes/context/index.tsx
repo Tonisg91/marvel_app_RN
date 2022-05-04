@@ -69,30 +69,36 @@ export function CachedRequestsProvider({
     setState({ ...state, isFetching: true })
   }
 
-  const updateExistingData = (value: MarvelResponseData) => {
-    setState({
-      ...state,
-      isFetching: false,
-      data: {
-        ...state.data,
-        [url]: {
-          ...state.data[url],
-          results: [...state.data[url].results, ...value.results]
+  const updateExistingData = useCallback(
+    (value: MarvelResponseData) => {
+      setState({
+        ...state,
+        isFetching: false,
+        data: {
+          ...state.data,
+          [url]: {
+            ...state.data[url],
+            results: [...state.data[url].results, ...value.results]
+          }
         }
-      }
-    } as ContextStateFetched<MarvelData>)
-  }
+      } as ContextStateFetched<MarvelData>)
+    },
+    [url, state]
+  )
 
-  const addNewData = (value: MarvelResponseData) => {
-    setState({
-      ...state,
-      isFetching: false,
-      data: {
-        ...(state.data ?? {}),
-        [url]: value
-      }
-    } as ContextStateFetched<MarvelData>)
-  }
+  const addNewData = useCallback(
+    (value: MarvelResponseData) => {
+      setState({
+        ...state,
+        isFetching: false,
+        data: {
+          ...(state.data ?? {}),
+          [url]: value
+        }
+      } as ContextStateFetched<MarvelData>)
+    },
+    [url, state]
+  )
 
   const getProxyData = useCallback(() => {
     marvelProxy[getNavigatableUrl()]
@@ -105,7 +111,7 @@ export function CachedRequestsProvider({
         addNewData(value)
       })
       .catch(console.error)
-  }, [addNewData, getNavigatableUrl, url, state, updateExistingData])
+  }, [addNewData, getNavigatableUrl, url, updateExistingData])
 
   useEffect(() => {
     if (state.isFetching || !state.url) {
@@ -115,7 +121,7 @@ export function CachedRequestsProvider({
     setIsFetching()
 
     getProxyData()
-  }, [page, url])
+  }, [page, url, getProxyData, setIsFetching])
 
   return (
     <ApiRequestContext.Provider
