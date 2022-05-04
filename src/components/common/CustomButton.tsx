@@ -24,6 +24,7 @@ const styles = StyleSheet.create({
     marginTop: 10
   },
   buttonText: {
+    fontSize: 16,
     fontWeight: '700',
     color: '#fff'
   }

@@ -1,19 +1,33 @@
 import React, { useState } from 'react'
-import { ImageBackground, StyleSheet, TextInput, View } from 'react-native'
-import CustomButton from '../common/CustomButton'
+import { ImageBackground, StyleSheet, View } from 'react-native'
+
+import Input from '../common/Input'
 import { useAuth } from './context'
-import { AuthInput } from './type'
+import { EMAIL_REGEX } from '../constants'
+import { AuthErrors, AuthInput } from './type'
+import CustomButton from '../common/CustomButton'
 
 export default function Login() {
   const { login } = useAuth()
+
   const [values, setValues] = useState<AuthInput>({ email: '', password: '' })
+  const [errors, setErrors] = useState<AuthErrors>({})
 
   const handleChange = (field: string) => (value: string) =>
     setValues({ ...values, [field]: value })
 
-  const handleSubmit = () => {
-    // TODO: check values
-    login(values)
+  const handleSubmit = async () => {
+    if (!values.email || !values.password) return
+
+    if (!EMAIL_REGEX.test(values.email)) {
+      setErrors({ ...errors, email: 'Bad email format.' })
+      return
+    }
+
+    const responseError = await login(values)
+    if (responseError) {
+      setErrors(responseError)
+    }
   }
 
   return (
@@ -21,18 +35,18 @@ export default function Login() {
       source={require('../../../assets/images/login-bg.jpg')}
       style={styles.container}>
       <View style={styles.form}>
-        <TextInput
-          style={styles.input}
+        <Input
+          error={errors.email}
           onChangeText={handleChange('email')}
           value={values.email}
           placeholder="Email"
         />
-        <TextInput
-          style={styles.input}
+        <Input
+          error={errors.password}
           onChangeText={handleChange('password')}
           value={values.password}
-          secureTextEntry
           placeholder="Password"
+          secureTextEntry
         />
         <CustomButton text="Login" action={handleSubmit} />
       </View>

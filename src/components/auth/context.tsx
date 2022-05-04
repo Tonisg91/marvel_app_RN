@@ -33,19 +33,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const foundUser = FakeUsers.find(u => u.email === email)
 
     if (!foundUser) {
-      console.warn('User not found.')
-      return
+      return { email: 'User not found.' }
     }
 
     if (foundUser.password !== password) {
-      console.warn('Password does not match.')
-      return
+      return { password: 'Password does not match.' }
     }
 
     const userData = { email: foundUser.email, name: foundUser.name }
 
-    await AsyncStorage.setItem(USER, JSON.stringify(userData))
+    try {
+      await AsyncStorage.setItem(USER, JSON.stringify(userData))
+    } catch (error) {
+      console.error(error)
+    }
     setUser(userData)
+    return
   }
 
   const logout = () => {

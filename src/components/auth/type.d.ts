@@ -7,6 +7,10 @@ export interface AuthInput {
   email: string
   password: string
 }
+export interface AuthErrors {
+  email?: string
+  password?: string
+}
 
 export const AuthInitState: Auth = {
   user: {
@@ -19,6 +23,6 @@ export const AuthInitState: Auth = {
 export type AuthContextProps = {
   user: User | null
   loading: boolean
-  login: (data: AuthInput) => void
+  login: (data: AuthInput) => Promise<AuthErrors | void>
   logout: () => void
 }
