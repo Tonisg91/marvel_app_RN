@@ -11,10 +11,12 @@ import {
   ApiRequestContextState,
   CachedDataContextProps,
   ContextStateFetched,
+  ContextStateFetching,
   ContextStateInitialized,
   ContextStateUninitialized,
   IActions,
-  MarvelData
+  MarvelData,
+  MarvelResponseData
 } from '../type'
 import { getFullUrl, getPaginationQueryStringParams } from '../utils'
 
@@ -58,52 +60,61 @@ export function CachedRequestsProvider({
     canFetchMore && setPage(page + 1)
   }
 
+  const setIsFetching = () => {
+    if (state.url !== url) {
+      setState({ isFetching: true, url })
+      return
+    }
+
+    setState({ ...state, isFetching: true })
+  }
+
+  const updateExistingData = (value: MarvelResponseData) => {
+    setState({
+      ...state,
+      isFetching: false,
+      data: {
+        ...state.data,
+        [url]: {
+          ...state.data[url],
+          results: [...state.data[url].results, ...value.results]
+        }
+      }
+    } as ContextStateFetched<MarvelData>)
+  }
+
+  const addNewData = (value: MarvelResponseData) => {
+    setState({
+      ...state,
+      isFetching: false,
+      data: {
+        ...(state.data ?? {}),
+        [url]: value
+      }
+    } as ContextStateFetched<MarvelData>)
+  }
+
+  const getProxyData = useCallback(() => {
+    marvelProxy[getNavigatableUrl()]
+      .then(value => {
+        if (state.data && state.data[url]) {
+          updateExistingData(value)
+          return
+        }
+
+        addNewData(value)
+      })
+      .catch(console.error)
+  }, [addNewData, getNavigatableUrl, url, state, updateExistingData])
+
   useEffect(() => {
     if (state.isFetching || !state.url) {
       return
     }
 
-    setState(
-      state.url !== url
-        ? {
-            isFetching: true,
-            url
-          }
-        : {
-            ...state,
-            isFetching: true
-          }
-    )
+    setIsFetching()
 
-    marvelProxy[getNavigatableUrl()]
-      .then(value => {
-        // catch if url includes comics
-
-        if (state.data && state.data[url]) {
-          setState({
-            ...state,
-            isFetching: false,
-            data: {
-              ...state.data,
-              [url]: {
-                ...state.data[url],
-                results: [...state.data[url].results, ...value.results]
-              }
-            }
-          })
-          return
-        }
-
-        setState({
-          ...state,
-          isFetching: false,
-          data: {
-            ...(state.data ?? {}),
-            [url]: value
-          }
-        } as ContextStateFetched<MarvelData>)
-      })
-      .catch(console.error)
+    getProxyData()
   }, [page, url])
 
   return (

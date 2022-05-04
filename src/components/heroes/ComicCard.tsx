@@ -1,12 +1,13 @@
+import React, { memo } from 'react'
 import { Image, StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+
 import { Comic } from './type'
 
 interface Props {
   comic: Comic
 }
 
-export default function ComicCard({ comic }: Props) {
+function ComicCard({ comic }: Props) {
   return (
     <View style={styles.container}>
       <Image
@@ -22,6 +23,8 @@ export default function ComicCard({ comic }: Props) {
     </View>
   )
 }
+
+export default memo(ComicCard)
 
 const styles = StyleSheet.create({
   container: {

@@ -8,10 +8,10 @@ import { AuthErrors, AuthInput } from './type'
 import CustomButton from '../common/CustomButton'
 
 export default function Login() {
-  const { login } = useAuth()
-
   const [values, setValues] = useState<AuthInput>({ email: '', password: '' })
   const [errors, setErrors] = useState<AuthErrors>({})
+
+  const { login } = useAuth()
 
   const handleChange = (field: string) => (value: string) =>
     setValues({ ...values, [field]: value })
