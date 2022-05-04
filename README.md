@@ -12,6 +12,8 @@ En [Dev](https://github.com/Tonisg91/marvel_app_RN/tree/dev) está la versión 1
 
 ## Notas:
 
+Los datos de autenticación están en el archivo src/seeds.json
+
 Hay un polyfill para el objeto URL nativo de JS. En la versión solicitada por las directrices, el dicho objeto añade un "/" al final de la URL e imposibilita la consulta.
 
 [Issue](https://github.com/facebook/react-native/issues/24428)
